@@ -23,6 +23,6 @@ function MockBucket() {
     ];
 
     operations.forEach(function(operationName) {
-        self[operationName] = sinon.spy();
+        self[operationName] = sinon.stub();
     });
 }
