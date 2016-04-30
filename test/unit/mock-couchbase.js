@@ -1,10 +1,10 @@
 var sinon = require('sinon');
-var MockBucket = require('./mock-bucket.js');
-var bucketMock = new MockBucket();
+var MockCouchbaseBucket = require('./mock-coucbase-bucket.js');
+var mockCouchbaseBucket = new MockCouchbaseBucket();
 
 module.exports = {
     Cluster: sinon.stub().returns({
-        openBucket: sinon.stub().returns(bucketMock)
+        open: sinon.stub().returns(mockCouchbaseBucket)
     }),
-    bucketMock: bucketMock
+    mockCouchbaseBucket: mockCouchbaseBucket
 };

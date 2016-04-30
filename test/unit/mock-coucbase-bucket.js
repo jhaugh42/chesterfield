@@ -2,11 +2,11 @@ var EventEmitter = require('events').EventEmitter;
 var util = require('util');
 var sinon = require('sinon');
 
-module.exports = MockBucket;
+module.exports = MockCouchbaseBucket;
 
-util.inherits(MockBucket, EventEmitter);
+util.inherits(MockCouchbaseBucket, EventEmitter);
 
-function MockBucket() {
+function MockCouchbaseBucket() {
     var self = this;
     var operations = [
         'append',

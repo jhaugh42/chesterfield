@@ -1,5 +1,5 @@
 var assert = require('assert');
-var MockBucket = require('./mock-bucket.js');
+var MockCouchbaseBucket = require('./mock-coucbase-bucket.js');
 var mockery = require('mockery');
 var sinon = require('sinon');
 
@@ -23,7 +23,7 @@ describe('basic usage', function() {
 
     describe('connection tests', function () {
         var cluster;
-        var bucketAgent;
+        var bucket;
 
         describe('cluster', function () {
             it('should connect to cluster', function () {
@@ -32,26 +32,26 @@ describe('basic usage', function() {
             });
         });
 
-        describe('openBucket', function () {
+        describe('open', function () {
             it('should return bucket agent function ', function () {
-                bucketAgent = chesterfield.openBucket(cluster, 'beer', 'guest');
-                assert.equal(typeof bucketAgent, 'function');
+                bucket = chesterfield.open(cluster, 'beer', 'guest');
+                assert.equal(typeof bucket, 'function');
             });
         });
 
-        describe('bucketAgent', function () {
+        describe('bucket', function () {
             describe('on connect', function () {
                 var error;
                 var bucket;
 
                 before(function (done) {
-                    bucketAgent(function (bucketError, resultingBucket) {
+                    bucket(function (bucketError, resultingBucket) {
                         error = bucketError;
                         bucket = resultingBucket;
                         done();
                     });
 
-                    couchbaseMock.bucketMock.emit('connect', couchbaseMock.bucketMock);
+                    couchbaseMock.mockCouchbaseBucket.emit('connect', couchbaseMock.mockCouchbaseBucket);
                 });
 
                 it('should not return error', function () {
@@ -59,7 +59,7 @@ describe('basic usage', function() {
                 });
 
                 it('should return bucket object', function () {
-                    assert.equal(bucket instanceof MockBucket, true);
+                    assert.equal(bucket instanceof MockCouchbaseBucket, true);
                 });
             });
 
@@ -68,13 +68,13 @@ describe('basic usage', function() {
                 var badBucket;
 
                 before(function (done) {
-                    bucketAgent(function (bucketError, resultingBucket) {
+                    bucket(function (bucketError, resultingBucket) {
                         error = bucketError;
                         badBucket = resultingBucket;
                         done();
                     });
 
-                    couchbaseMock.bucketMock.emit('error', {code: 666});
+                    couchbaseMock.mockCouchbaseBucket.emit('error', {code: 666});
                 });
 
                 it('should return error', function () {
@@ -89,141 +89,141 @@ describe('basic usage', function() {
     });
 
     describe('bucket operations', function () {
-        var bucketAgent;
-        var bucketMock;
+        var bucket;
+        var mockCouchbaseBucket;
 
         before(function() {
-            bucketAgent = sinon.stub();
-            bucketMock = new MockBucket();
+            bucket = sinon.stub();
+            mockCouchbaseBucket = new MockCouchbaseBucket();
         });
 
         beforeEach(function() {
-            bucketAgent.reset();
+            bucket.reset();
         });
 
         describe('append', function () {
             it('should call append on bucket', function (done) {
-                chesterfield.append(bucketAgent, 'someKey', {}, function () {
-                    assert.equal(bucketMock.append.calledOnce, true);
+                chesterfield.append(bucket, 'someKey', {}, function () {
+                    assert.equal(mockCouchbaseBucket.append.calledOnce, true);
                     done();
                 });
 
-                bucketAgent.callArgWith(0, null, bucketMock);
-                bucketMock.append.callArg(2);
+                bucket.callArgWith(0, null, mockCouchbaseBucket);
+                mockCouchbaseBucket.append.callArg(2);
             });
         });
 
         describe('counter', function () {
             it('should call counter on bucket', function (done) {
-                chesterfield.counter(bucketAgent, 'someKey', {}, function () {
-                    assert.equal(bucketMock.counter.calledOnce, true);
+                chesterfield.counter(bucket, 'someKey', {}, function () {
+                    assert.equal(mockCouchbaseBucket.counter.calledOnce, true);
                     done();
                 });
 
-                bucketAgent.callArgWith(0, null, bucketMock);
-                bucketMock.counter.callArg(2);
+                bucket.callArgWith(0, null, mockCouchbaseBucket);
+                mockCouchbaseBucket.counter.callArg(2);
             });
         });
 
         describe('get', function () {
             it('should call get on bucket', function (done) {
-                chesterfield.get(bucketAgent, 'someKey', function () {
-                    assert.equal(bucketMock.get.calledOnce, true);
+                chesterfield.get(bucket, 'someKey', function () {
+                    assert.equal(mockCouchbaseBucket.get.calledOnce, true);
                     done();
                 });
 
-                bucketAgent.callArgWith(0, null, bucketMock);
-                bucketMock.get.callArg(1);
+                bucket.callArgWith(0, null, mockCouchbaseBucket);
+                mockCouchbaseBucket.get.callArg(1);
             });
         });
 
         describe('getReplica', function () {
             it('should call getReplica on bucket', function (done) {
-                chesterfield.getReplica(bucketAgent, 'someKey', function () {
-                    assert.equal(bucketMock.getReplica.calledOnce, true);
+                chesterfield.getReplica(bucket, 'someKey', function () {
+                    assert.equal(mockCouchbaseBucket.getReplica.calledOnce, true);
                     done();
                 });
 
-                bucketAgent.callArgWith(0, null, bucketMock);
-                bucketMock.getReplica.callArg(1);
+                bucket.callArgWith(0, null, mockCouchbaseBucket);
+                mockCouchbaseBucket.getReplica.callArg(1);
             });
         });
 
         describe('getMulti', function () {
             it('should call getMulti on bucket', function (done) {
-                chesterfield.getMulti(bucketAgent, ['someKey1', 'someKey2'], function () {
-                    assert.equal(bucketMock.getMulti.calledOnce, true);
+                chesterfield.getMulti(bucket, ['someKey1', 'someKey2'], function () {
+                    assert.equal(mockCouchbaseBucket.getMulti.calledOnce, true);
                     done();
                 });
 
-                bucketAgent.callArgWith(0, null, bucketMock);
-                bucketMock.getMulti.callArg(1);
+                bucket.callArgWith(0, null, mockCouchbaseBucket);
+                mockCouchbaseBucket.getMulti.callArg(1);
             });
         });
         describe('insert', function () {
             it('should call insert on bucket', function (done) {
-                chesterfield.insert(bucketAgent, 'someKey', {}, function () {
-                    assert.equal(bucketMock.insert.calledOnce, true);
+                chesterfield.insert(bucket, 'someKey', {}, function () {
+                    assert.equal(mockCouchbaseBucket.insert.calledOnce, true);
                     done();
                 });
 
-                bucketAgent.callArgWith(0, null, bucketMock);
-                bucketMock.insert.callArg(2);
+                bucket.callArgWith(0, null, mockCouchbaseBucket);
+                mockCouchbaseBucket.insert.callArg(2);
             });
         });
         describe('prepend', function () {
             it('should call prepend on bucket', function (done) {
-                chesterfield.prepend(bucketAgent, 'someKey', 'something to prepend', function () {
-                    assert.equal(bucketMock.prepend.calledOnce, true);
+                chesterfield.prepend(bucket, 'someKey', 'something to prepend', function () {
+                    assert.equal(mockCouchbaseBucket.prepend.calledOnce, true);
                     done();
                 });
 
-                bucketAgent.callArgWith(0, null, bucketMock);
-                bucketMock.prepend.callArg(2);
+                bucket.callArgWith(0, null, mockCouchbaseBucket);
+                mockCouchbaseBucket.prepend.callArg(2);
             });
         });
         describe('query', function () {
             it('should call query on bucket', function (done) {
-                chesterfield.query(bucketAgent, 'some query thing', function () {
-                    assert.equal(bucketMock.query.calledOnce, true);
+                chesterfield.query(bucket, 'some query thing', function () {
+                    assert.equal(mockCouchbaseBucket.query.calledOnce, true);
                     done();
                 });
 
-                bucketAgent.callArgWith(0, null, bucketMock);
-                bucketMock.query.callArg(1);
+                bucket.callArgWith(0, null, mockCouchbaseBucket);
+                mockCouchbaseBucket.query.callArg(1);
             });
         });
         describe('remove', function () {
             it('should call remove on bucket', function (done) {
-                chesterfield.remove(bucketAgent, 'someKey', function () {
-                    assert.equal(bucketMock.remove.calledOnce, true);
+                chesterfield.remove(bucket, 'someKey', function () {
+                    assert.equal(mockCouchbaseBucket.remove.calledOnce, true);
                     done();
                 });
 
-                bucketAgent.callArgWith(0, null, bucketMock);
-                bucketMock.remove.callArg(1);
+                bucket.callArgWith(0, null, mockCouchbaseBucket);
+                mockCouchbaseBucket.remove.callArg(1);
             });
         });
         describe('replace', function () {
             it('should call replace on bucket', function (done) {
-                chesterfield.replace(bucketAgent, 'someKey', {}, function () {
-                    assert.equal(bucketMock.replace.calledOnce, true);
+                chesterfield.replace(bucket, 'someKey', {}, function () {
+                    assert.equal(mockCouchbaseBucket.replace.calledOnce, true);
                     done();
                 });
 
-                bucketAgent.callArgWith(0, null, bucketMock);
-                bucketMock.replace.callArg(2);
+                bucket.callArgWith(0, null, mockCouchbaseBucket);
+                mockCouchbaseBucket.replace.callArg(2);
             });
         });
         describe('upsert', function () {
             it('should call upsert on bucket', function (done) {
-                chesterfield.upsert(bucketAgent, 'someKey', {}, function () {
-                    assert.equal(bucketMock.upsert.calledOnce, true);
+                chesterfield.upsert(bucket, 'someKey', {}, function () {
+                    assert.equal(mockCouchbaseBucket.upsert.calledOnce, true);
                     done();
                 });
 
-                bucketAgent.callArgWith(0, null, bucketMock);
-                bucketMock.upsert.callArg(2);
+                bucket.callArgWith(0, null, mockCouchbaseBucket);
+                mockCouchbaseBucket.upsert.callArg(2);
             });
         });
     });
