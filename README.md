@@ -39,3 +39,7 @@ cb.upsert(bucket, popeMobileKey, popeMobile, function(error, result) {
 });
 
 ```
+
+## Contributing
+
+Please see ```CONTRIBUTING.md``` for more details on contributing to the repository.
