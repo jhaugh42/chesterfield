@@ -1,5 +1,8 @@
 # Chesterfield
+
+[![npm version](https://badge.fury.io/js/chesterfield.svg)](https://badge.fury.io/js/chesterfield)
 [![Build Status](https://travis-ci.org/binaryalchemist/chesterfield.svg)](https://travis-ci.org/binaryalchemist/chesterfield)
+[![Coverage Status](https://coveralls.io/repos/github/binaryalchemist/chesterfield/badge.svg)](https://coveralls.io/github/binaryalchemist/chesterfield)
 
 Chesterfield is wrapper for the Node JS Couchbase SDK for writing Functional Javascript.
 
