@@ -1,0 +1,13 @@
+language: node_js
+node_js:
+- '0.12'
+- '4.2'
+after_script:
+- npm run coveralls
+deploy:
+  provider: npm
+  email: kristopher.l.alexander@gmail.com
+  api_key:
+    secure: qXkq4lVkp/iKLDiRA2+nNRgr9/fyBUGjKU9v7eM8LT0zuWMHtBrvIdv3/KXeL+pIlLyeZW3XWpCVAMTznetBG4jbyOW3+8PF2QgQatW+vfkuu04b/DctzkJFF+foBIZzkfPmku8LyEIsJfCzAi6rflzs19etj7IY9Fd+l0lJAn0kVIp5fj54rLTSP/6U9w4CBm1f0JRX6qLAP6LPCdVpgKe7fFBX8cV9FbM/UXUFjaEWiOXyFId4STQ7grfLL1qrY3WCLFALBD7FZiQPTAKs1ppmmN9EnannurS6Mf8Ldc7SLH8G193BQfepwp8XQqNmTzasgMzrEsQ7Z56W/bHNKRgyte9DOeTcuV0Q6nZd986FNrr+jqtSnCdTV19pBSpQdJMj5fcSXVUCA9vbZELvkq4XexWL1SGXwO3kmFYJaCwRjiDc0e067OO8rrmQCy2mpT9VXNuecdhca3PQ62PxuR36B+wRMGohzHy4ibHVNtV+2jO7RCN+5uLEv+8DFczrwHHvNZDQiuarlBESDDHnSqH5iLcS6lXX1xsbRqLDTZS1xI2LKLjy5vLcpz4RJlFgSlxJehLKByw/+2cGcVXQ2peiK1ObbqaDVPojzsyeTpWdjzhmWTuyh1zBlUGdQv7ci+CRJ1p7NWjS+WDtkm9eCYW/wsFwQnE1pfjR3Rr93tw=
+  on:
+    branch: master
