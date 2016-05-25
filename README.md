@@ -1,5 +1,5 @@
 # Chesterfield
-[![Build Status](https://travis-ci.org/binaryalchemist/chesterfield.svg?branch=issue-1)](https://travis-ci.org/binaryalchemist/chesterfield)
+[![Build Status](https://travis-ci.org/binaryalchemist/chesterfield.svg)](https://travis-ci.org/binaryalchemist/chesterfield)
 Chesterfield is wrapper for the Node JS Couchbase SDK for writing Functional Javascript.
 
 ## Installation
