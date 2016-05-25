@@ -3,11 +3,16 @@
   "version": "0.1.0",
   "license": "MIT",
   "main": "lib/chesterfield.js",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/binaryalchemist/chesterfield.git"
+  },
   "description": "Couchbase SDK Wrapper For Functional Javascript",
   "dependencies": {
-    "couchbase": "^2.1.4"
+    "couchbase": "^2.1.6"
   },
   "devDependencies": {
+    "coveralls": "^2.11.9",
     "istanbul": "^0.4.2",
     "mocha": "^2.4.5",
     "mockery": "^1.4.1",
@@ -16,6 +21,7 @@
   "scripts": {
     "test": "npm run unit-test",
     "unit-test": "./node_modules/.bin/_mocha --recursive test/unit",
-    "coverage": "./node_modules/.bin/istanbul cover ./node_modules/.bin/_mocha --report html -- --recursive test/unit -R spec"
+    "cover": "istanbul cover ./node_modules/mocha/bin/_mocha --report lcovonly -- -R spec",
+    "coveralls": "npm run cover && ./node_modules/coveralls/bin/coveralls.js < coverage/lcov.info"
   }
 }
