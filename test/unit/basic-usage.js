@@ -8,9 +8,11 @@ describe('basic usage', function() {
     var chesterfield;
     var couchbaseMock;
     var bucketMock;
+    var invokeSpy;
 
     before(function () {
         bucketMock = new EventEmitter();
+
         var operations = [
             'append',
             'counter',
@@ -35,10 +37,17 @@ describe('basic usage', function() {
             })
         };
 
+        invokeSpy = sinon.spy(function(f, a) {
+            var callback = a[a.length - 1];
+            callback();
+        });
+
         mockery.enable({
             useCleanCache: true
         });
+
         mockery.registerMock('couchbase', couchbaseMock);
+        mockery.registerMock('./invoke.js', invokeSpy);
         mockery.registerAllowable('../../lib/chesterfield');
         chesterfield = require('../../lib/chesterfield');
     });
@@ -165,6 +174,7 @@ describe('basic usage', function() {
 
         before(function() {
             bucket = sinon.stub();
+            bucket.callsArgWith(0, null, bucketMock);
         });
 
         beforeEach(function() {
@@ -174,112 +184,79 @@ describe('basic usage', function() {
         describe('positive tests', function () {
             it('should call append on bucket', function (done) {
                 chesterfield.append(bucket, 'someKey', {}, function () {
-                    assert.equal(bucketMock.append.calledOnce, true);
+                    assert.equal(invokeSpy.calledWith(bucketMock.append), true);
                     done();
                 });
-
-                bucket.callArgWith(0, null, bucketMock);
-                bucketMock.append.callArg(2);
             });
 
             it('should call counter on bucket', function (done) {
                 chesterfield.counter(bucket, 'someKey', {}, function () {
-                    assert.equal(bucketMock.counter.calledOnce, true);
+                    assert.equal(invokeSpy.calledWith(bucketMock.counter), true);
                     done();
                 });
-
-                bucket.callArgWith(0, null, bucketMock);
-                bucketMock.counter.callArg(2);
             });
 
             it('should call get on bucket', function (done) {
                 chesterfield.get(bucket, 'someKey', function () {
-                    assert.equal(bucketMock.get.calledOnce, true);
+                    assert.equal(invokeSpy.calledWith(bucketMock.get), true);
                     done();
                 });
-
-                bucket.callArgWith(0, null, bucketMock);
-                bucketMock.get.callArg(1);
             });
 
             it('should call getReplica on bucket', function (done) {
                 chesterfield.getReplica(bucket, 'someKey', function () {
-                    assert.equal(bucketMock.getReplica.calledOnce, true);
+                    assert.equal(invokeSpy.calledWith(bucketMock.getReplica), true);
                     done();
                 });
-
-                bucket.callArgWith(0, null, bucketMock);
-                bucketMock.getReplica.callArg(1);
             });
 
             it('should call getMulti on bucket', function (done) {
                 chesterfield.getMulti(bucket, ['someKey1', 'someKey2'], function () {
-                    assert.equal(bucketMock.getMulti.calledOnce, true);
+                    assert.equal(invokeSpy.calledWith(bucketMock.getMulti), true);
                     done();
                 });
-
-                bucket.callArgWith(0, null, bucketMock);
-                bucketMock.getMulti.callArg(1);
             });
 
             it('should call insert on bucket', function (done) {
                 chesterfield.insert(bucket, 'someKey', {}, function () {
-                    assert.equal(bucketMock.insert.calledOnce, true);
+                    assert.equal(invokeSpy.calledWith(bucketMock.insert), true);
                     done();
                 });
-
-                bucket.callArgWith(0, null, bucketMock);
-                bucketMock.insert.callArg(2);
             });
 
             it('should call prepend on bucket', function (done) {
                 chesterfield.prepend(bucket, 'someKey', 'something to prepend', function () {
-                    assert.equal(bucketMock.prepend.calledOnce, true);
+                    assert.equal(invokeSpy.calledWith(bucketMock.prepend), true);
                     done();
                 });
-
-                bucket.callArgWith(0, null, bucketMock);
-                bucketMock.prepend.callArg(2);
             });
 
             it('should call query on bucket', function (done) {
                 chesterfield.query(bucket, 'some query thing', function () {
-                    assert.equal(bucketMock.query.calledOnce, true);
+                    assert.equal(invokeSpy.calledWith(bucketMock.query), true);
                     done();
                 });
-
-                bucket.callArgWith(0, null, bucketMock);
-                bucketMock.query.callArg(1);
             });
 
             it('should call remove on bucket', function (done) {
                 chesterfield.remove(bucket, 'someKey', function () {
-                    assert.equal(bucketMock.remove.calledOnce, true);
+                    assert.equal(invokeSpy.calledWith(bucketMock.remove), true);
                     done();
                 });
-
-                bucket.callArgWith(0, null, bucketMock);
-                bucketMock.remove.callArg(1);
             });
 
             it('should call replace on bucket', function (done) {
                 chesterfield.replace(bucket, 'someKey', {}, function () {
-                    assert.equal(bucketMock.replace.calledOnce, true);
+                    assert.equal(invokeSpy.calledWith(bucketMock.replace), true);
                     done();
                 });
-
-                bucket.callArgWith(0, null, bucketMock);
-                bucketMock.replace.callArg(2);
             });
 
             it('should call upsert on bucket', function (done) {
                 chesterfield.upsert(bucket, 'someKey', {}, function () {
-                    assert.equal(bucketMock.upsert.calledOnce, true);
+                    assert.equal(invokeSpy.calledWith(bucketMock.upsert), true);
                     done();
                 });
-
-                bucket.callArgWith(0, null, bucketMock);
-                bucketMock.upsert.callArg(2);
             });
         });
 
