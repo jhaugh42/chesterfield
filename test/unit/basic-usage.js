@@ -86,7 +86,7 @@ describe('basic usage', function() {
                 });
 
                 before(function (done) {
-                    bucketMock.isConnected = true;
+                    bucketMock.connected = true;
                     bucket(function (bucketError, resultingBucket) {
                         error = bucketError;
                         connectedBucket = resultingBucket;
@@ -95,7 +95,7 @@ describe('basic usage', function() {
                 });
 
                 after(function() {
-                    bucketMock.isConnected = false;
+                    bucketMock.connected = false;
                 });
 
                 it('should not return error', function () {
