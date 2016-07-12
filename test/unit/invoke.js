@@ -12,7 +12,7 @@ describe('invoke.js', function() {
         invoke(funcMock, args);
     });
 
-    it('should call apply on function all args except the first one', function() {
+    it('should call apply function on all args except the first one', function() {
         var expectedArgs = ['key', {value:{}}];
         assert.equal(funcMock.apply.calledWith(null, expectedArgs), true);
     });
