@@ -10,6 +10,21 @@ describe('basic usage', function() {
     var bucketMock;
     var invokeSpy;
 
+    function NotChesterfieldViewQuery() {
+    }
+
+    function ViewQuery() {
+    }
+
+    function N1qlQuery() {
+    }
+
+    function SpatialQuery() {
+    }
+
+    function SearchQuery() {
+    }
+
     before(function () {
         bucketMock = new EventEmitter();
 
@@ -27,17 +42,21 @@ describe('basic usage', function() {
             'upsert'
         ];
 
-        operations.forEach(function(operationName) {
+        operations.forEach(function (operationName) {
             bucketMock[operationName] = sinon.stub();
         });
 
         couchbaseMock = {
             Cluster: sinon.stub().returns({
                 openBucket: sinon.stub().returns(bucketMock)
-            })
+            }),
+            ViewQuery: ViewQuery,
+            N1qlQuery: N1qlQuery,
+            SpatialQuery: SpatialQuery,
+            SearchQuery: SearchQuery
         };
 
-        invokeSpy = sinon.spy(function(s, f, a) {
+        invokeSpy = sinon.spy(function (s, f, a) {
             var callback = a[a.length - 1];
             callback();
         });
@@ -79,7 +98,7 @@ describe('basic usage', function() {
                 var connectedBucket;
                 var bucket;
 
-                before(function() {
+                before(function () {
                     var cluster = chesterfield.cluster('couchbase://localhost');
                     bucket = chesterfield.open(cluster, 'beer', 'guest');
                     bucketMock.removeAllListeners();
@@ -94,7 +113,7 @@ describe('basic usage', function() {
                     });
                 });
 
-                after(function() {
+                after(function () {
                     bucketMock.connected = false;
                 });
 
@@ -112,7 +131,7 @@ describe('basic usage', function() {
                 var connectedBucket;
                 var bucket;
 
-                before(function() {
+                before(function () {
                     var cluster = chesterfield.cluster('couchbase://localhost');
                     bucket = chesterfield.open(cluster, 'beer', 'guest');
                     bucketMock.removeAllListeners();
@@ -142,7 +161,7 @@ describe('basic usage', function() {
                 var badBucket;
                 var bucket;
 
-                before(function() {
+                before(function () {
                     var cluster = chesterfield.cluster('couchbase://localhost');
                     bucket = chesterfield.open(cluster, 'beer', 'guest');
                     bucketMock.removeAllListeners();
@@ -172,13 +191,14 @@ describe('basic usage', function() {
     describe('bucket operations', function () {
         var bucket;
 
-        before(function() {
+        before(function () {
             bucket = sinon.stub();
             bucket.callsArgWith(0, null, bucketMock);
         });
 
-        beforeEach(function() {
+        beforeEach(function () {
             bucket.reset();
+            invokeSpy.reset();
         });
 
         describe('positive tests', function () {
@@ -231,9 +251,44 @@ describe('basic usage', function() {
                 });
             });
 
-            it('should call query on bucket', function (done) {
-                chesterfield.query(bucket, 'some query thing', function () {
+            it('should call query on bucket when called with a ViewQuery', function (done) {
+                chesterfield.query(bucket, new chesterfield.ViewQuery(), function () {
                     assert.equal(invokeSpy.calledWith(bucketMock, bucketMock.query), true);
+                    done();
+                });
+            });
+
+            it('should call query on bucket when called with a SpatialQuery', function (done) {
+                chesterfield.query(bucket, new chesterfield.SpatialQuery(), function () {
+                    assert.equal(invokeSpy.calledWith(bucketMock, bucketMock.query), true);
+                    done();
+                });
+            });
+
+            it('should call query on bucket when called with a N1qlQuery', function (done) {
+                chesterfield.query(bucket, new chesterfield.N1qlQuery(), function () {
+                    assert.equal(invokeSpy.calledWith(bucketMock, bucketMock.query), true);
+                    done();
+                });
+            });
+
+            it('should call query on bucket when called with a SearchQuery', function (done) {
+                chesterfield.query(bucket, new chesterfield.SearchQuery(), function () {
+                    assert.equal(invokeSpy.calledWith(bucketMock, bucketMock.query), true);
+                    done();
+                });
+            });
+
+            it('should call back with a TypeError error when the type of query specified is not an instance of a query object exposed by chesterfield', function (done) {
+                chesterfield.query(bucket, new NotChesterfieldViewQuery(), function (error) {
+                    assert.equal(error instanceof TypeError, true);
+                    done();
+                });
+            });
+
+            it('should call back with a TypeError error when the specified query is not an object', function (done) {
+                chesterfield.query(bucket, 'i am not an object', function (error) {
+                    assert.equal(error instanceof TypeError, true);
                     done();
                 });
             });
@@ -263,7 +318,7 @@ describe('basic usage', function() {
         describe('bucket calls back with error', function () {
             var expectedError;
 
-            before(function(){
+            before(function () {
                 expectedError = new Error('yip yip yip yip yip');
                 bucket.callsArgWith(0, expectedError);
             });
@@ -317,8 +372,29 @@ describe('basic usage', function() {
                 });
             });
 
-            it('should call query on bucket', function (done) {
-                chesterfield.query(bucket, 'some query thing', function (error) {
+            it('should call query on bucket with a ViewQuery', function (done) {
+                chesterfield.query(bucket, new chesterfield.ViewQuery(), function (error) {
+                    assert.deepEqual(error, expectedError);
+                    done();
+                });
+            });
+
+            it('should call query on bucket with a SpatialQuery', function (done) {
+                chesterfield.query(bucket, new chesterfield.SpatialQuery(), function (error) {
+                    assert.deepEqual(error, expectedError);
+                    done();
+                });
+            });
+
+            it('should call query on bucket with a N1qlQuery', function (done) {
+                chesterfield.query(bucket, new chesterfield.N1qlQuery(), function (error) {
+                    assert.deepEqual(error, expectedError);
+                    done();
+                });
+            });
+
+            it('should call query on bucket with a SearchQuery', function (done) {
+                chesterfield.query(bucket, new chesterfield.SearchQuery(), function (error) {
                     assert.deepEqual(error, expectedError);
                     done();
                 });
