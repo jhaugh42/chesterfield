@@ -372,28 +372,28 @@ describe('basic usage', function() {
                 });
             });
 
-            it('should call query on bucket with a ViewQuery', function (done) {
+            it('should callback with the error from the bucket when query is invoked with a ViewQuery', function (done) {
                 chesterfield.query(bucket, new chesterfield.ViewQuery(), function (error) {
                     assert.deepEqual(error, expectedError);
                     done();
                 });
             });
 
-            it('should call query on bucket with a SpatialQuery', function (done) {
+            it('should callback with the error from the bucket when query is invoked with a SpatialQuery', function (done) {
                 chesterfield.query(bucket, new chesterfield.SpatialQuery(), function (error) {
                     assert.deepEqual(error, expectedError);
                     done();
                 });
             });
 
-            it('should call query on bucket with a N1qlQuery', function (done) {
+            it('should callback with the error from the bucket when query is invoked with a N1qlQuery', function (done) {
                 chesterfield.query(bucket, new chesterfield.N1qlQuery(), function (error) {
                     assert.deepEqual(error, expectedError);
                     done();
                 });
             });
 
-            it('should call query on bucket with a SearchQuery', function (done) {
+            it('should callback with the error from the bucket when query is invoked with a SearchQuery', function (done) {
                 chesterfield.query(bucket, new chesterfield.SearchQuery(), function (error) {
                     assert.deepEqual(error, expectedError);
                     done();
