@@ -91,9 +91,29 @@ describe('basic usage', function() {
                 assert.equal(typeof bucket, 'function');
             });
 
-            it('should provide a \'rawBucket\' property on the bucket agent function which exposes the raw couchbase bucket', function () {
-                var bucket = chesterfield.open(cluster, 'beer', 'guest');
-                assert.equal(bucket.rawBucket, bucketMock);
+            [
+                'operationTimeout',
+                'viewTimeout',
+                'n1qlTimeout',
+                'durabilityTimeout',
+                'durabilityInterval',
+                'managementTimeout',
+                'configThrottle',
+                'connectionTimeout',
+                'nodeConnectionTimeout'
+            ].forEach(function(prop) {
+                it('should map \'' + prop + '\' onto the bucket when passed in as an option', function(done) {
+                    bucketMock.connected = true;
+
+                    var options = {};
+                    options[prop] = prop;
+                    var bucket = chesterfield.open(cluster, 'beer', 'guest', options);
+
+                    bucket(function(err, bucket) {
+                        assert.equal(bucket[prop], prop);
+                        done();
+                    });
+                });
             });
         });
 
