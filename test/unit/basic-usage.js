@@ -90,6 +90,11 @@ describe('basic usage', function() {
                 var bucket = chesterfield.open(cluster, 'beer', 'guest');
                 assert.equal(typeof bucket, 'function');
             });
+
+            it('should provide a \'rawBucket\' property on the bucket agent function which exposes the raw couchbase bucket', function () {
+                var bucket = chesterfield.open(cluster, 'beer', 'guest');
+                assert.equal(bucket.rawBucket, bucketMock);
+            });
         });
 
         describe('bucket', function () {
