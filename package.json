@@ -9,14 +9,15 @@
   },
   "description": "Couchbase SDK Wrapper For Functional Javascript",
   "dependencies": {
-    "couchbase": "2.2.2"
+    "couchbase": "2.2.4"
   },
   "devDependencies": {
-    "coveralls": "2.11.12",
-    "istanbul": "0.4.4",
-    "mocha": "3.0.2",
-    "mockery": "1.7.0",
-    "sinon": "1.17.5"
+    "chai": "^3.5.0",
+    "coveralls": "2.11.15",
+    "istanbul": "0.4.5",
+    "mocha": "3.2.0",
+    "mockery": "2.0.0",
+    "sinon": "1.17.6"
   },
   "scripts": {
     "test": "./node_modules/.bin/_mocha --recursive",
