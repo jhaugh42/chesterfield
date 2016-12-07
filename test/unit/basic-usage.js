@@ -1,8 +1,6 @@
 var assert = require('assert');
 var mockery = require('mockery');
 var sinon = require('sinon');
-var EventEmitter = require('events').EventEmitter;
-
 
 describe('basic usage', function() {
     var chesterfield;
@@ -26,7 +24,7 @@ describe('basic usage', function() {
     }
 
     before(function () {
-        bucketMock = new EventEmitter();
+        bucketMock = {};
 
         var operations = [
             'append',
@@ -65,6 +63,7 @@ describe('basic usage', function() {
             useCleanCache: true
         });
 
+        mockery.registerMock('./chesterfield-bucket.js', sinon.stub());
         mockery.registerMock('couchbase', couchbaseMock);
         mockery.registerMock('./invoke.js', invokeSpy);
         mockery.registerAllowable('../../lib/chesterfield');
@@ -72,145 +71,8 @@ describe('basic usage', function() {
     });
 
     after(function () {
+        mockery.deregisterAll();
         mockery.disable();
-    });
-
-    describe('connection tests', function () {
-        var cluster;
-
-        describe('cluster', function () {
-            it('should connect to cluster', function () {
-                cluster = chesterfield.cluster('couchbase://localhost');
-                assert.equal(couchbaseMock.Cluster.calledOnce, true);
-            });
-        });
-
-        describe('open', function () {
-            it('should return bucket agent function ', function () {
-                var bucket = chesterfield.open(cluster, 'beer', 'guest');
-                assert.equal(typeof bucket, 'function');
-            });
-
-            [
-                'operationTimeout',
-                'viewTimeout',
-                'n1qlTimeout',
-                'durabilityTimeout',
-                'durabilityInterval',
-                'managementTimeout',
-                'configThrottle',
-                'connectionTimeout',
-                'nodeConnectionTimeout'
-            ].forEach(function(prop) {
-                it('should map \'' + prop + '\' onto the bucket when passed in as an option', function(done) {
-                    bucketMock.connected = true;
-
-                    var options = {};
-                    options[prop] = prop;
-                    var bucket = chesterfield.open(cluster, 'beer', 'guest', options);
-
-                    bucket(function(err, bucket) {
-                        assert.equal(bucket[prop], prop);
-                        done();
-                    });
-                });
-            });
-        });
-
-        describe('bucket', function () {
-            describe('is connected', function () {
-                var error;
-                var connectedBucket;
-                var bucket;
-
-                before(function () {
-                    var cluster = chesterfield.cluster('couchbase://localhost');
-                    bucket = chesterfield.open(cluster, 'beer', 'guest');
-                    bucketMock.removeAllListeners();
-                });
-
-                before(function (done) {
-                    bucketMock.connected = true;
-                    bucket(function (bucketError, resultingBucket) {
-                        error = bucketError;
-                        connectedBucket = resultingBucket;
-                        done();
-                    });
-                });
-
-                after(function () {
-                    bucketMock.connected = false;
-                });
-
-                it('should not return error', function () {
-                    assert.equal(!error, true);
-                });
-
-                it('should return bucket object', function () {
-                    assert.deepEqual(connectedBucket, bucketMock);
-                });
-            });
-
-            describe('on connect', function () {
-                var error;
-                var connectedBucket;
-                var bucket;
-
-                before(function () {
-                    var cluster = chesterfield.cluster('couchbase://localhost');
-                    bucket = chesterfield.open(cluster, 'beer', 'guest');
-                    bucketMock.removeAllListeners();
-                });
-
-                before(function (done) {
-                    bucket(function (bucketError, resultingBucket) {
-                        error = bucketError;
-                        connectedBucket = resultingBucket;
-                        done();
-                    });
-
-                    bucketMock.emit('connect', bucketMock);
-                });
-
-                it('should not return error', function () {
-                    assert.equal(!error, true);
-                });
-
-                it('should return bucket object', function () {
-                    assert.deepEqual(connectedBucket, bucketMock);
-                });
-            });
-
-            describe('on error', function () {
-                var error;
-                var badBucket;
-                var bucket;
-
-                before(function () {
-                    var cluster = chesterfield.cluster('couchbase://localhost');
-                    bucket = chesterfield.open(cluster, 'beer', 'guest');
-                    bucketMock.removeAllListeners();
-                });
-
-                before(function (done) {
-                    bucket(function (bucketError, resultingBucket) {
-                        error = bucketError;
-                        badBucket = resultingBucket;
-                        done();
-                    });
-
-                    bucketMock.emit('error', {code: 666});
-                });
-
-                it('should return error', function () {
-                    assert.equal(error.code, 666);
-                });
-
-                it('should not return bucket object', function () {
-                    assert.equal(!badBucket, true);
-                });
-            });
-        });
     });
 
     describe('bucket operations', function () {
