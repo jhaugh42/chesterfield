@@ -75,6 +75,49 @@ describe('basic usage', function() {
         mockery.disable();
     });
 
+    describe('connection tests', function () {
+        var cluster;
+
+        describe('cluster', function () {
+            it('should connect to cluster', function () {
+                cluster = chesterfield.cluster('couchbase://localhost');
+                assert.equal(couchbaseMock.Cluster.calledOnce, true);
+            });
+        });
+
+        describe('open', function () {
+            it('should return bucket agent function ', function () {
+                var bucket = chesterfield.open(cluster, 'beer', 'guest');
+                assert.equal(typeof bucket, 'function');
+            });
+
+            [
+                'operationTimeout',
+                'viewTimeout',
+                'n1qlTimeout',
+                'durabilityTimeout',
+                'durabilityInterval',
+                'managementTimeout',
+                'configThrottle',
+                'connectionTimeout',
+                'nodeConnectionTimeout'
+            ].forEach(function (prop) {
+                it('should map \'' + prop + '\' onto the bucket when passed in as an option', function (done) {
+                    bucketMock.connected = true;
+
+                    var options = {};
+                    options[prop] = prop;
+                    var bucket = chesterfield.open(cluster, 'beer', 'guest', options);
+
+                    bucket(function (err, bucket) {
+                        assert.equal(bucket[prop], prop);
+                        done();
+                    });
+                });
+            });
+        });
+    });
+
     describe('bucket operations', function () {
         var bucket;
 
