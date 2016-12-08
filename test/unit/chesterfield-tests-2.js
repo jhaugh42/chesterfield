@@ -20,17 +20,11 @@ describe('chesterfield functions', function() {
             mockery.disable();
         });
 
-        var bucket;
         var cluster;
         var chesterfield;
-        var chesterfieldBucket;
 
         beforeEach(function () {
             mockery.resetCache();
-            chesterfieldBucket = {
-                bind: sinon.stub()
-            };
-            mockery.registerMock('./chesterfield-bucket.js', chesterfieldBucket);
 
             cluster = {
                 openBucket: sinon.stub().returns({})
@@ -50,10 +44,6 @@ describe('chesterfield functions', function() {
             chesterfield.upsert = {};
         });
 
-        afterEach(function() {
-            mockery.deregisterMock('./chesterfield-bucket.js');
-        });
-
         it('should call couchbase.openBucket once, with the bucket name and password', function () {
             chesterfield.open(cluster, 'bucketName', 'password');
 
@@ -62,160 +52,19 @@ describe('chesterfield functions', function() {
             ]);
         });
 
-        it('should return the result of chesterfieldBucket.bind', function() {
-            chesterfieldBucket.bind.returns('result of _bucket.bind');
-            cluster.openBucket.returns({a: 'bucket'});
-
-            var result = chesterfield.open(cluster, 'bucketName', 'password');
-
-            expect(result).to.equal('result of _bucket.bind');
+        it('should return function', function() {
+            var bucket = chesterfield.open(cluster, 'bucketName', 'password');
+            expect(typeof bucket).to.eql('function');
         });
 
-        describe('when options are not specified', function () {
-            it('should call chesterfieldBucket.bind with null context, ' +
-                'the bucket returned from cluster.openBucket and an empty array', function () {
-                cluster.openBucket.returns({a: 'bucket'});
-
-                chesterfield.open(cluster, 'bucketName', 'password');
-
-                expect(chesterfieldBucket.bind.args).to.eql([
-                    [null, {a: 'bucket'}, []]
-                ]);
+        it('bucket function should callback with bucket object', function(done) {
+            var bucket = chesterfield.open(cluster, 'bucketName', 'password');
+            bucket(function(error, bucketObject) {
+                if (error) return done(error);
+                expect(bucketObject).to.eql({});
+                done();
             });
         });
-
-        describe('when known options are specified', function() {
-            it('should call chesterfieldBucket.bind with null context, ' +
-                'the bucket returned from cluster.openBucket, ' +
-                'with an  and an operationTimeout specified ' +
-                'empty array', function() {
-                cluster.openBucket.returns({a: 'bucket'});
-
-                chesterfield.open(cluster, 'bucketName', 'password', { operationTimeout: 'abcd'});
-
-                expect(chesterfieldBucket.bind.args).to.eql([
-                    [null, {a: 'bucket', operationTimeout: 'abcd'}, []]
-                ]);
-            });
-
-            it('should call chesterfieldBucket.bind with null context, ' +
-                'the bucket returned from cluster.openBucket, ' +
-                'with an  and a viewTimeout specified ' +
-                'empty array', function() {
-                cluster.openBucket.returns({a: 'bucket'});
-
-                chesterfield.open(cluster, 'bucketName', 'password', { viewTimeout: 'abcd'});
-
-                expect(chesterfieldBucket.bind.args).to.eql([
-                    [null, {a: 'bucket', viewTimeout: 'abcd'}, []]
-                ]);
-            });
-
-            it('should call chesterfieldBucket.bind with null context, ' +
-                'the bucket returned from cluster.openBucket, ' +
-                'with an  and a n1qlTimeout specified ' +
-                'empty array', function() {
-                cluster.openBucket.returns({a: 'bucket'});
-
-                chesterfield.open(cluster, 'bucketName', 'password', { n1qlTimeout: 'abcd'});
-
-                expect(chesterfieldBucket.bind.args).to.eql([
-                    [null, {a: 'bucket', n1qlTimeout: 'abcd'}, []]
-                ]);
-            });
-
-            it('should call chesterfieldBucket.bind with null context, ' +
-                'the bucket returned from cluster.openBucket, ' +
-                'with an  and a durabilityTimeout specified ' +
-                'empty array', function() {
-                cluster.openBucket.returns({a: 'bucket'});
-
-                chesterfield.open(cluster, 'bucketName', 'password', { durabilityTimeout: 'abcd'});
-
-                expect(chesterfieldBucket.bind.args).to.eql([
-                    [null, {a: 'bucket', durabilityTimeout: 'abcd'}, []]
-                ]);
-            });
-
-            it('should call chesterfieldBucket.bind with null context, ' +
-                'the bucket returned from cluster.openBucket, ' +
-                'with an  and a durabilityInterval specified ' +
-                'empty array', function() {
-                cluster.openBucket.returns({a: 'bucket'});
-
-                chesterfield.open(cluster, 'bucketName', 'password', { durabilityInterval: 'abcd'});
-
-                expect(chesterfieldBucket.bind.args).to.eql([
-                    [null, {a: 'bucket', durabilityInterval: 'abcd'}, []]
-                ]);
-            });
-
-            it('should call chesterfieldBucket.bind with null context, ' +
-                'the bucket returned from cluster.openBucket, ' +
-                'with an  and a managementTimeout specified ' +
-                'empty array', function() {
-                cluster.openBucket.returns({a: 'bucket'});
-
-                chesterfield.open(cluster, 'bucketName', 'password', { managementTimeout: 'abcd'});
-
-                expect(chesterfieldBucket.bind.args).to.eql([
-                    [null, {a: 'bucket', managementTimeout: 'abcd'}, []]
-                ]);
-            });
-
-            it('should call chesterfieldBucket.bind with null context, ' +
-                'the bucket returned from cluster.openBucket, ' +
-                'with an  and a configThrottle specified ' +
-                'empty array', function() {
-                cluster.openBucket.returns({a: 'bucket'});
-
-                chesterfield.open(cluster, 'bucketName', 'password', { configThrottle: 'abcd'});
-
-                expect(chesterfieldBucket.bind.args).to.eql([
-                    [null, {a: 'bucket', configThrottle: 'abcd'}, []]
-                ]);
-            });
-
-            it('should call chesterfieldBucket.bind with null context, ' +
-                'the bucket returned from cluster.openBucket, ' +
-                'with an  and a connectionTimeout specified ' +
-                'empty array', function() {
-                cluster.openBucket.returns({a: 'bucket'});
-
-                chesterfield.open(cluster, 'bucketName', 'password', { connectionTimeout: 'abcd'});
-
-                expect(chesterfieldBucket.bind.args).to.eql([
-                    [null, {a: 'bucket', connectionTimeout: 'abcd'}, []]
-                ]);
-            });
-
-            it('should call chesterfieldBucket.bind with null context, ' +
-                'the bucket returned from cluster.openBucket, ' +
-                'with an  and a nodeConnectionTimeout specified ' +
-                'empty array', function() {
-                cluster.openBucket.returns({a: 'bucket'});
-
-                chesterfield.open(cluster, 'bucketName', 'password', { nodeConnectionTimeout: 'abcd'});
-
-                expect(chesterfieldBucket.bind.args).to.eql([
-                    [null, {a: 'bucket', nodeConnectionTimeout: 'abcd'}, []]
-                ]);
-            });
-        });
-
-        describe('when unknown options are specified', function() {
-            it('should call chesterfieldBucket.bind with null context, ' +
-                'the bucket returned from cluster.openBucket and an empty array', function () {
-                cluster.openBucket.returns({a: 'bucket'});
-
-                chesterfield.open(cluster, 'bucketName', 'password', {some: 'option', shouldnt: 'be added to bucket'});
-
-                expect(chesterfieldBucket.bind.args).to.eql([
-                    [null, {a: 'bucket'}, []]
-                ]);
-            });
-        });
-
     });
 
     describe('chesterfield.cluster', function() {
