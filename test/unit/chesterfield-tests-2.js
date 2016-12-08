@@ -20,17 +20,11 @@ describe('chesterfield functions', function() {
             mockery.disable();
         });
 
-        var bucket;
         var cluster;
         var chesterfield;
-        var chesterfieldBucket;
 
         beforeEach(function () {
             mockery.resetCache();
-            chesterfieldBucket = {
-                bind: sinon.stub()
-            };
-            mockery.registerMock('./chesterfield-bucket.js', chesterfieldBucket);
 
             cluster = {
                 openBucket: sinon.stub().returns({})
@@ -50,16 +44,26 @@ describe('chesterfield functions', function() {
             chesterfield.upsert = {};
         });
 
-        afterEach(function() {
-            mockery.deregisterMock('./chesterfield-bucket.js');
-        });
-
         it('should call couchbase.openBucket once, with the bucket name and password', function () {
             chesterfield.open(cluster, 'bucketName', 'password');
 
             expect(cluster.openBucket.args).to.eql([
                 ['bucketName', 'password']
             ]);
+        });
+
+        it('should return function', function() {
+            var bucket = chesterfield.open(cluster, 'bucketName', 'password');
+            expect(typeof bucket).to.eql('function');
+        });
+
+        it('bucket function should callback with bucket object', function(done) {
+            var bucket = chesterfield.open(cluster, 'bucketName', 'password');
+            bucket(function(error, bucketObject) {
+                if (error) return done(error);
+                expect(bucketObject).to.eql({});
+                done();
+            });
         });
     });
 
