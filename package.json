@@ -1,6 +1,6 @@
 {
   "name": "chesterfield",
-  "version": "2.0.0",
+  "version": "2.0.1",
   "license": "MIT",
   "main": "lib/chesterfield.js",
   "repository": {
@@ -9,7 +9,7 @@
   },
   "description": "Couchbase SDK Wrapper For Functional Javascript",
   "dependencies": {
-    "couchbase": "2.4.1"
+    "couchbase": "2.4.3"
   },
   "devDependencies": {
     "chai": "^3.5.0",
