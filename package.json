@@ -9,7 +9,7 @@
   },
   "description": "Couchbase SDK Wrapper For Functional Javascript",
   "dependencies": {
-    "couchbase": "2.4.1"
+    "couchbase": "2.4.3"
   },
   "devDependencies": {
     "chai": "^3.5.0",
